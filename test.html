@@ -203,9 +203,19 @@
           tree.showNodes(selfAndParents);
 
           if (withChildren) {
-            tree.showNodes(node.children);
+            showChildren(node, tree);
+          }
+        }
+        
+        function showChildren(node, tree) {
+            if (node.isParent) {
+                tree.showNodes(node.children);
+                console.log('show children:', node.children.map((n) => n.name));
+                // console.log('show children:', node.children);
 
-            console.log('show children:', node.children.map((n) => n.name));
+                node.children.forEach(function (n) {
+                    showChildren(n, tree);
+                });
           }
         }
 
@@ -216,6 +226,8 @@
         function addnodes() {
             // 获取左侧选中的节点，同时只能选择一个
             var selectedNode = global.leftTree.getSelectedNodes()[0];
+            if (!selectedNode) return;
+
             console.log('你选中了:', selectedNode.name);
 
             // 5 被添加到“已接收方”的叶子节点，在左侧不显示
@@ -234,7 +246,8 @@
          */
         function addAllnodes() {
             var leftSelectedNode = global.leftTree.getSelectedNodes()[0];
-
+            if (!leftSelectedNode) return;
+            
             console.log('leftSelectedNode:', leftSelectedNode);
 
             if (!leftSelectedNode.isParent) {
