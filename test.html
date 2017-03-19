@@ -15,6 +15,8 @@
     <script type="text/javascript" src="js/jquery.ztree.core.min.js"></script>
     <script type="text/javascript" src="js/jquery.ztree.excheck.min.js"></script>
     <script type="text/javascript" src="js/jquery.ztree.exedit.min.js"></script>
+
+    <script src="js/jquery.ztree.exhide.js"></script>
 </head>
 <body>
     <div class="notice">
@@ -155,78 +157,98 @@
                 selectedMulti: false //设置是否允许同时选中多个节点
             }
         };
-
+        
         var zNodes = [
             { id:1, pId:0, name:"湖南省公安厅"},
+
             { id:11, pId:1, name:"长沙市公安局"},
             { id:111, pId:11, name:"雨花分局"},
             { id:112, pId:11, name:"芙蓉分局"},
+
             { id:21, pId:1, name:"株洲市公安局"},
             { id:211, pId:21, name:"芦淞区分局"},
             { id:212, pId:21, name:"荷塘区分局"},
+
             { id:31, pId:1, name:"湘潭市公安局"},
             { id:311, pId:31, name:"雨湖分局"},
             { id:311, pId:31, name:"岳塘分局"},
-
         ];
-        $(document).ready(function(){
-            $.fn.zTree.init($("#menu_tree_left"), settingLeft, zNodes);
-            $.fn.zTree.init($("#menu_tree_right"), settingRight, []);
-        });
-
         
 
-        function addnodes(){
+        // 函数之间共享的变量
+        var global = {};
+        
+        // 总的思路是：初始化右边的树和左边一模一样，当选中左侧的节点点击添加，则显示右侧相应的节点，并把左侧的节点相应置灰或者隐藏
+        $(document).ready(function(){
+            $.fn.zTree.init($("#menu_tree_left"), settingLeft, zNodes);
+            global.leftTree = $.fn.zTree.getZTreeObj("menu_tree_left");
             
-            var treeObj = $.fn.zTree.getZTreeObj("menu_tree_left");
+            // 初始化 right tree
+            $.fn.zTree.init($("#menu_tree_right"), settingRight, zNodes);
+            global.rightTree = $.fn.zTree.getZTreeObj("menu_tree_right");
 
-            // console.log('treeObj:', treeObj);
-            var nodes=treeObj.getNodes();
-//            var nodes = treeObj.transformToArray(treeObj.getNodes());
-            var nodesSelected=treeObj.getSelectedNodes();
-
-            // nodesSelected=treeObj.transformToArray(nodesSelected);
-
-            console.log('nodesSelected:', nodesSelected);
-            
-            var nodesSelectedWithoutChildren = nodesSelected.map(function (node) {
-                return $.extend({}, node, { children: [] });
+            // 获取右侧所有节点
+            global.rightTreeNodes = global.rightTree.getNodesByFilter(function () {
+              return true;
             });
 
-            // nodesSelected[0].children = [];
+            // 隐藏右侧所有节点
+            global.rightTree.hideNodes(global.rightTreeNodes);
+        });
+        
+        function show(node, tree, withChildren) {
+          // 节点本身
+          var selfAndParents = node.getPath();
+          console.log('nodes to show:', selfAndParents.map((n) => n.name));
+          tree.showNodes(selfAndParents);
 
-            // console.log('nodesSelectedWithoutChildren:', nodesSelectedWithoutChildren);
+          if (withChildren) {
+            tree.showNodes(node.children);
 
-
-            var newtreeObj = $.fn.zTree.getZTreeObj("menu_tree_right");
-
-            // console.log('newtreeObj:', newtreeObj);
-            // newNodes = newtreeObj.addNodes(null, nodesSelected);
-            newNodes = newtreeObj.addNodes(null, nodesSelectedWithoutChildren);
-            // console.log('newNodes:', newNodes);
-//            console.log(nodesSelected);
-
-        }
-        function addAllnodes(){
-            var treeObj = $.fn.zTree.getZTreeObj("menu_tree_left");
-//          var nodes=treeObj.getNodes();
-            // var nodes = treeObj.transformToArray(treeObj.getNodes());
-
-            var nodesSelected=treeObj.getSelectedNodes();
-
-
-            // nodesSelected=treeObj.transformToArray(nodesSelected);
-            console.log('nodesSelected:', nodesSelected);
-
-            var newtreeObj = $.fn.zTree.getZTreeObj("menu_tree_right");
-
-            newNodes = newtreeObj.addNodes(null,nodesSelected);
-
-            // console.log(nodes);
-            // console.log(nodesSelected);
+            console.log('show children:', node.children.map((n) => n.name));
+          }
         }
 
+        /**
+         * 添加本身，并显示完整的组织架构
+         * 比如：点击【雨花分局】，点击【添加】，右边应该显示【湖南省公安厅】【长沙市公安局】【雨花分局】
+         */
+        function addnodes() {
+            // 获取左侧选中的节点，同时只能选择一个
+            var selectedNode = global.leftTree.getSelectedNodes()[0];
+            console.log('你选中了:', selectedNode.name);
 
+            // 5 被添加到“已接收方”的叶子节点，在左侧不显示
+            if (!selectedNode.isParent) {
+                global.leftTree.hideNode(selectedNode);
+            }
+
+            // 节点本身
+            var nodeToShow = global.rightTree.getNodeByParam('name', selectedNode.name, null);
+            show(nodeToShow, global.rightTree, false);
+        }
+        
+        /**
+         * 添加本身和下属部门，并显示完整的组织架构
+         * 比如：点击【长沙市公安局】，点击【添加下属部门】，右边应该显示【湖南省公安厅】【长沙市公安局】【雨花分局】【芙蓉分局】
+         */
+        function addAllnodes() {
+            var leftSelectedNode = global.leftTree.getSelectedNodes()[0];
+
+            console.log('leftSelectedNode:', leftSelectedNode);
+
+            if (!leftSelectedNode.isParent) {
+                alert('添加失败：该分局没有下属部门');
+                return ;
+            }
+
+            var rightTree = global.rightTree;
+
+            console.log('你选中了:', leftSelectedNode.name);
+            
+            var nodeToShow = rightTree.getNodeByParam('name', leftSelectedNode.name, null);
+            show(nodeToShow, global.rightTree, true);
+        }
     </script>
 </body>
 </html>
