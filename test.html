@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>test</title>
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+    <link rel="stylesheet" type="text/css" href="css/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" type="text/css" href="css/mycss.css">
+    
+    <!-- es5 的新方法，ie8 可以用了，比如 Array.prototype.map -->
+    <script src="js/es5-shim-4.5.7.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script> -->
+
+    <script type="text/javascript" src="js/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.core.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.excheck.min.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.exedit.min.js"></script>
+</head>
+<body>
+    <div class="notice">
+        <form action="">
+            <table>
+                <tr>
+                    <td>接收方：</td>
+                    <td>
+                        <div>
+                            <input type="text" name="receiver" placeholder="所有用户" onclick="showmodel()"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>标题：<span>*</span></td>
+                    <td>
+                        <div>
+                            <input type="text" name="title"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>重要程度：</td>
+                    <td>
+                        <div class="importance">
+                            <input type="radio" name="importance" checked />一般
+                            <input type="radio" name="importance" />保密
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td >正文：<span>*</span></td>
+                    <td>
+                        <div>
+                            <textarea name="content" rows="10" style="border:0;width:100%;resize: none;"></textarea>
+                        </div>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>(请输入不少于3个字，不多于200个字的通告内容)</td>
+                </tr>
+            </table>
+            <button type="submit">发布</button>
+        </form>
+    </div>
+
+    <div class="model">
+        <div class="model-dialog">
+            <div class="model-content">
+                <div class="model-title">
+                    <p class="fl">添加接收方</p>
+                    <div class="fr">
+                        <img src="image/1.png" width="24" height="24" alt="" onclick="closemodel()"/>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="model-body">
+                    <div class="all fl">
+                        <p>所有用户</p>
+                        <div>
+                            <div class="ztree-wrap">
+                                <ul id="menu_tree_left" class="ztree"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="middle fl">
+                        <div><button id="add" onclick="addnodes();">添加</button></div>
+                        <div><button id="addAll" onclick="addAllnodes();">添加下属部门</button></div>
+                    </div>
+                    <div class="selected fr">
+                        <p>已选接收方</p>
+                        <div>
+                            <div class="ztree-wrap">
+                                <ul id="menu_tree_right" class="ztree"></ul>
+                            </div>
+                        </div>
+                        <form action="">
+                            <input type="checkbox" name="users"/>所有用户
+                        </form>
+                    </div>
+                </div>
+                <div class="model-footer">
+                    <div class="fl">
+                        <button>确定</button>
+                    </div>
+                    <div class="fr">
+                        <button>取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showmodel(){
+            var model=document.getElementsByClassName('model')[0];
+            model.style.display='block';
+        }
+        function closemodel(){
+            var model=document.getElementsByClassName('model')[0];
+            model.style.display='none';
+        }
+
+        var settingLeft = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            view: {
+                dblClickExpand: false,//双击节点时，是否自动展开父节点的标识
+                showLine: false,//是否显示节点之间的连线
+                showIcon: false,//是否显示图标
+                fontCss: { 'color': '#354a5e' },//字体样式函数
+                selectedMulti: false //设置是否允许同时选中多个节点
+            },
+            callback:{
+                onClick: function (event, treeId, treeNode) {
+                    zTree = $.fn.zTree.getZTreeObj("menu_tree_left");
+                }
+            }
+        };
+
+        var settingRight = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            view: {
+                dblClickExpand: false,//双击节点时，是否自动展开父节点的标识
+                showLine: false,//是否显示节点之间的连线
+                showIcon: false,//是否显示图标
+                fontCss: { 'color': '#354a5e' },//字体样式函数
+                selectedMulti: false //设置是否允许同时选中多个节点
+            }
+        };
+
+        var zNodes = [
+            { id:1, pId:0, name:"湖南省公安厅"},
+            { id:11, pId:1, name:"长沙市公安局"},
+            { id:111, pId:11, name:"雨花分局"},
+            { id:112, pId:11, name:"芙蓉分局"},
+            { id:21, pId:1, name:"株洲市公安局"},
+            { id:211, pId:21, name:"芦淞区分局"},
+            { id:212, pId:21, name:"荷塘区分局"},
+            { id:31, pId:1, name:"湘潭市公安局"},
+            { id:311, pId:31, name:"雨湖分局"},
+            { id:311, pId:31, name:"岳塘分局"},
+
+        ];
+        $(document).ready(function(){
+            $.fn.zTree.init($("#menu_tree_left"), settingLeft, zNodes);
+            $.fn.zTree.init($("#menu_tree_right"), settingRight, []);
+        });
+
+        
+
+        function addnodes(){
+            
+            var treeObj = $.fn.zTree.getZTreeObj("menu_tree_left");
+
+            // console.log('treeObj:', treeObj);
+            var nodes=treeObj.getNodes();
+//            var nodes = treeObj.transformToArray(treeObj.getNodes());
+            var nodesSelected=treeObj.getSelectedNodes();
+
+            // nodesSelected=treeObj.transformToArray(nodesSelected);
+
+            console.log('nodesSelected:', nodesSelected);
+            
+            var nodesSelectedWithoutChildren = nodesSelected.map(function (node) {
+                return $.extend({}, node, { children: [] });
+            });
+
+            // nodesSelected[0].children = [];
+
+            // console.log('nodesSelectedWithoutChildren:', nodesSelectedWithoutChildren);
+
+
+            var newtreeObj = $.fn.zTree.getZTreeObj("menu_tree_right");
+
+            // console.log('newtreeObj:', newtreeObj);
+            // newNodes = newtreeObj.addNodes(null, nodesSelected);
+            newNodes = newtreeObj.addNodes(null, nodesSelectedWithoutChildren);
+            // console.log('newNodes:', newNodes);
+//            console.log(nodesSelected);
+
+        }
+        function addAllnodes(){
+            var treeObj = $.fn.zTree.getZTreeObj("menu_tree_left");
+//          var nodes=treeObj.getNodes();
+            // var nodes = treeObj.transformToArray(treeObj.getNodes());
+
+            var nodesSelected=treeObj.getSelectedNodes();
+
+
+            // nodesSelected=treeObj.transformToArray(nodesSelected);
+            console.log('nodesSelected:', nodesSelected);
+
+            var newtreeObj = $.fn.zTree.getZTreeObj("menu_tree_right");
+
+            newNodes = newtreeObj.addNodes(null,nodesSelected);
+
+            // console.log(nodes);
+            // console.log(nodesSelected);
+        }
+
+
+    </script>
+</body>
+</html>

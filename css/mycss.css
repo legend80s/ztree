@@ -1,0 +1,146 @@
+
+.fl{
+    float:left;
+}
+.fr{
+    float:right;
+}
+.clear{
+    clear:both;
+}
+/*通告的样式*/
+.notice{
+    margin:50px;
+    padding: 30px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color:#6f7c89;
+}
+
+.notice form table{
+    width:100%;
+    background: #f9fbfb;
+    padding:20px;
+}
+.notice table tr{
+    padding:20px 0;
+}
+.notice table td input{
+    border:0;
+
+}
+input[type='text']{
+    width:100%;
+    height:30px;
+    /*padding-left: 10px;*/
+}
+.notice table td div{
+    margin-bottom: 10px;
+    width:100%;
+    border:1px solid #edeeed;
+    border-radius: 2px;
+    background: #ffffff;
+}
+.notice table td:first-child{
+    width:15%;
+}
+.notice table td span{
+    color:#e4393c;
+}
+.importance{
+    padding: 7px 0;
+}
+.importance input{
+    width:30px;
+}
+.notice button{
+    border:1px solid #209f46;
+    color:#209f46;
+    padding:6px 8px;
+    border-radius:3px;
+    margin-top:30px;
+    margin-left:1250px;
+    background:#FFF;
+}
+
+/*模态框的样式*/
+.model{
+    display: none;
+    position:fixed;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    background:rgba(0,0,0,0);
+    z-index:999;
+}
+.model-dialog{/*负责宽和定位*/
+    width:700px;
+    margin:100px auto;
+}
+.model-content{
+    border:3px solid #c9c9c9;
+    background:#fff;
+    min-height:100px;
+    font-family: Verdana, Arial, Helvetica, AppleGothic, sans-serif;
+}
+.model-content .model-title{
+    border-bottom:1px solid #c9c9c9;
+    background:#364a51;
+}
+.model-content .model-title p{
+    font-size: 14px;
+    color:#fff;
+    padding: 5px 10px;
+}
+.model-content .model-title div.fr{
+   margin:5px;
+}
+.model-content .model-body{
+    overflow: hidden;
+    color:#354a5e;
+    font-size: 12px;
+    background:#f9fbfb;
+    padding:10px;
+}
+.model-content .model-body p{
+    padding: 10px 15px 0;
+}
+
+.middle{
+    width:150px;
+    text-align: center;
+    padding-top: 120px;
+}
+.middle div{
+    padding: 10px 0;
+}
+.model-content .model-footer{
+    margin:20px;
+    overflow: hidden;
+}
+.model-content .model-footer div{
+    width:48%;
+}
+.model-content .model-footer div:first-child{
+    text-align: right;
+
+}
+.model-content .model-footer div:last-child{
+    text-align: left;
+}
+.model button{
+    border:1px solid #209f46;
+    color:#209f46;
+    padding:2px 20px;
+    border-radius:3px;
+    background:#FFF;
+}
+#addAll,#add{
+    padding:3px 10px;
+}
+/*ztree样式*/
+#menu_tree_left,#menu_tree_right{
+    border:1px solid #eee;
+
+}
